@@ -17,6 +17,10 @@ namespace vk_engine{
 			LogicalDevice(Instance &instance, PhysicalDevice &device);
 			~LogicalDevice();
 
+			// avoid copy
+			LogicalDevice(const LogicalDevice &) = delete;
+			LogicalDevice &operator=(LogicalDevice &) = delete;
+
 			/**
 			 * @brief require the given extension
 			 * @param extension the vulkan extension

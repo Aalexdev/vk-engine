@@ -35,5 +35,5 @@ int main(int argc, char **argv){
 	while (!window.shouldClose()){
 		glfwPollEvents();
 		_sleep(0.016);
-	}	
+	}
 }

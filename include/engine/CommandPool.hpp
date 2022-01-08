@@ -12,6 +12,10 @@ namespace vk_engine{
 			CommandPool(LogicalDevice &device);
 			~CommandPool();
 
+			// avoid copy
+			CommandPool(const CommandPool &) = delete;
+			CommandPool &operator=(const CommandPool &) = delete;
+
 			enum Flags{
 				FLAG_TRANSIENT = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,
 				FLAG_RESET_BUFFER = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT,

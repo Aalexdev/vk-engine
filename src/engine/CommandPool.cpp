@@ -5,6 +5,7 @@
 
 namespace vk_engine{
 	CommandPool::CommandPool(LogicalDevice &device) : device{device}{}
+	
 	CommandPool::~CommandPool(){
 		vkDestroyCommandPool(device, commandPool, nullptr);
 	}
