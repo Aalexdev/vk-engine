@@ -38,4 +38,35 @@ namespace vk_engine{
 
 		vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 	}
+
+	void copyBuffer(CommandPool &commandPool, LogicalDevice &device, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size){
+		SingleTimeCommands commandBuffer(commandPool, device, device.getQueues()[0][PhysicalDevice::GRAPHIC_FAMILY]);
+
+		VkBufferCopy copyRegion{};
+		copyRegion.dstOffset = 0;
+		copyRegion.srcOffset = 0;
+		copyRegion.size = size;
+
+		vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+	}
+
+	void copyBufferToImage(CommandPool &commandPool, LogicalDevice &device, VkBuffer buffer, VkImage image, uint32_t imageWidth, uint32_t imageHeight, uint32_t imageLayerCount){
+		SingleTimeCommands commandBuffer(commandPool, device, device.getQueues()[0][PhysicalDevice::GRAPHIC_FAMILY]);
+
+		VkBufferImageCopy region{};
+		region.bufferOffset = 0;
+		region.bufferRowLength = 0;
+		region.bufferImageHeight = 0;
+
+		region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		region.imageSubresource.mipLevel = 0;
+		region.imageSubresource.baseArrayLayer = 0;
+		region.imageSubresource.layerCount = imageLayerCount;
+
+		region.imageOffset = {0, 0, 0};
+		region.imageExtent = {imageWidth, imageHeight, 1};
+
+		vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+	}
+
 }
