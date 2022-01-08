@@ -178,4 +178,11 @@ namespace vk_engine{
 		return features;
 	}
 
+	PhysicalDevice::FamilyDetails PhysicalDevice::getFamily(Family family) const{
+		for (auto &f : families){
+			if (f.type == family) return f;
+		}
+		throw std::runtime_error("failed to found the given family");
+	}
+
 }

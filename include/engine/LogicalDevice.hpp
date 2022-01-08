@@ -32,6 +32,8 @@ namespace vk_engine{
 			/**
 			 * @brief set the queue priority of all queues
 			 * @param priority the queues priority
+			 * @bug not working
+			 * TODO : rebuild the function to work
 			 */
 			void setQueuesPriorities(const float &priority){std::fill(queuePriorities.begin(), queuePriorities.end(), priority);}
 
@@ -41,12 +43,16 @@ namespace vk_engine{
 			 */
 			void setQueueCount(const int &count) {queuePriorities.reserve(count); queueCount = static_cast<uint32_t>(count);}
 
-			
-
 			/**
 			 * @brief build the logical device from the given parameters
 			 */
 			void build();
+
+			/**
+			 * @brief get the queues
+			 * @return std::vector<std::array<VkQueue, PhysicalDevice::FAMILY_TYPE_COUNT>> 
+			 */
+			std::vector<std::array<VkQueue, PhysicalDevice::FAMILY_TYPE_COUNT>> getQueues() const noexcept {return queues;}
 
 			// operators
 			operator VkDevice() {return device;}
@@ -60,5 +66,7 @@ namespace vk_engine{
 			std::vector<const char *> requiredExtensions;
 			std::vector<float> queuePriorities;
 			uint32_t queueCount = 0;
+
+			std::vector<std::array<VkQueue, PhysicalDevice::FAMILY_TYPE_COUNT>> queues;
 	};
 }

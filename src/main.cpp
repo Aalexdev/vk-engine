@@ -5,6 +5,7 @@
 #include "engine/Instance.hpp"
 #include "engine/PhysicalDevice.hpp"
 #include "engine/LogicalDevice.hpp"
+#include "engine/CommandPool.hpp"
 
 int main(int argc, char **argv){
 	vk_engine::Window window("title", 1080, 720);
@@ -26,8 +27,13 @@ int main(int argc, char **argv){
 	logicalDevice.setQueuePriority(1.0f, 0);
 	logicalDevice.build();
 
+	vk_engine::CommandPool commandPool(logicalDevice);
+	commandPool.setFamily(vk_engine::PhysicalDevice::GRAPHIC_FAMILY);
+	commandPool.setFlags(vk_engine::CommandPool::FLAG_TRANSIENT | vk_engine::CommandPool::FLAG_RESET_BUFFER);
+	commandPool.build(physicalDevice);
+
 	while (!window.shouldClose()){
 		glfwPollEvents();
 		_sleep(0.016);
-	}
+	}	
 }

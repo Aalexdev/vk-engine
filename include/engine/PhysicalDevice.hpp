@@ -138,6 +138,12 @@ namespace vk_engine{
 			 * @return std::vector<uint32_t> 
 			 */
 			std::vector<FamilyDetails> getFamilies() const noexcept {return families;}
+			
+			/**
+			 * @brief get the family details of the given family
+			 * @return the family details, if the family is not found throw an exception
+			 */
+			FamilyDetails getFamily(Family family) const;
 
 			/**
 			 * @brief get the biset of required features

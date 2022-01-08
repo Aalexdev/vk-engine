@@ -64,5 +64,15 @@ namespace vk_engine{
 		if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS)
 			throw std::runtime_error("failed to create logical device");
 		
+		queues.resize(queueCount);
+		for (int i=0; i<queueCount; i++){
+			// set all of the queues to nullptr
+			queues[i].fill(nullptr);
+
+			// set the used queues
+			for (const auto &family : families){
+				vkGetDeviceQueue(device, family.family, i, &queues[i][family.type]);
+			}
+		}
 	}
 }
