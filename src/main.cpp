@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 
 // files
 #include "engine/Window.hpp"
@@ -34,15 +35,35 @@ int main(int argc, char **argv){
 	commandPool.build();
 
 	vk_engine::Renderer renderer(logicalDevice, commandPool);
+	renderer.getSwapChain().setRefreshType(vk_engine::SwapChain::REFRESH_FIFO_MODE); // V-sync
+	renderer.setAutoUpdateViewportSize(false);
+	renderer.setViewPortSize(500.f, 500.f);
+	renderer.setClearColor(1.f);
+	
+	renderer.build();
+	
+	auto startTime = std::chrono::high_resolution_clock::now();
+	float counter = 0.f;
+	int fps = 0;
 
 	while (!window.shouldClose()){
 		glfwPollEvents();
-
+		startTime = std::chrono::high_resolution_clock::now();
 		if (auto commandBuffer = renderer.beginFrame()){
 			renderer.beginSwapChainRenderPass(commandBuffer);
 
 			renderer.endSwapChainRenderPass(commandBuffer);
 			renderer.endFrame();
+		}
+
+		counter += std::chrono::duration<float, std::chrono::milliseconds::period>(std::chrono::high_resolution_clock::now() - startTime).count();
+
+		if (counter >= 1000){
+			std::cout << "fps : " << fps << std::endl;
+			fps = 0;
+			counter = 0;
+		} else {
+			fps++;
 		}
 	}
     vkDeviceWaitIdle(logicalDevice);

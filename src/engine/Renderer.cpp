@@ -7,17 +7,28 @@
 #include <iostream>
 #include <cmath>
 
-// the clear color of the window
-#define CLEAR_COLOR {0.01f, 0.01f, 0.01f, 0.1f}
-
 namespace vk_engine{
 	Renderer::Renderer(LogicalDevice &device, CommandPool &commandPool) : device{device}, commandPool{commandPool}{
 		recreateSwapChain();
-		createCommandBuffers();
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+
+		viewport.width = device.getInstance().getWindow().getExtent().width;
+		viewport.height = device.getInstance().getWindow().getExtent().height;
+
+		scissor.offset = {0, 0};
+		scissor.extent = device.getInstance().getWindow().getExtent();
 	}
 
 	Renderer::~Renderer(){
 		freeCommandBuffers();
+	}
+
+	void Renderer::build(){
+		swapChain->build();
+		createCommandBuffers();
 	}
 
 	void Renderer::createCommandBuffers(){
@@ -50,14 +61,23 @@ namespace vk_engine{
 
 		if (swapChain == nullptr){
 			swapChain = std::make_unique<SwapChain>(device, extent);
-			swapChain->build();
 		} else {
 			std::shared_ptr<SwapChain> oldSwapChain = std::move(swapChain);
 			swapChain = std::make_unique<SwapChain>(device, extent, oldSwapChain);
+
+			// set properties
+			swapChain->setRefreshType(oldSwapChain->getRefreshType());
+			swapChain->setSurfaceFormat(oldSwapChain->getWantedFormat());
 			swapChain->build();
 
 			if (!oldSwapChain->compareSwapFormats(*swapChain.get()))
 				throw std::runtime_error("swap chain image or depth format has changed");
+			
+			if (autoUpdateViewportSize){
+				viewport.width = static_cast<float>(swapChain->getSwapChainExtent().width);
+				viewport.height = static_cast<float>(swapChain->getSwapChainExtent().height);
+				scissor.extent = swapChain->getSwapChainExtent();
+			}
 		}
 	}
 
@@ -121,22 +141,13 @@ namespace vk_engine{
 		renderPassBeginInfo.renderArea.extent = swapChain->getSwapChainExtent();
 
 		std::array<VkClearValue, 2> clearValues{};
-		clearValues[0].color = CLEAR_COLOR;
+		clearValues[0].color = clearColor;
 		clearValues[1].depthStencil = {1.f, 0};
 
 		renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 		renderPassBeginInfo.pClearValues = clearValues.data();
 
 		vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-		VkViewport viewport{};
-		viewport.x = 0.0f;
-		viewport.y = 0.0f;
-		viewport.width = static_cast<float>(swapChain->getSwapChainExtent().width);
-		viewport.height = static_cast<float>(swapChain->getSwapChainExtent().height);
-		viewport.minDepth = 0.0f;
-		viewport.maxDepth = 1.0f;
-		VkRect2D scissor{{0, 0}, swapChain->getSwapChainExtent()};
 
 		vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
@@ -147,4 +158,12 @@ namespace vk_engine{
 		assert(commandBuffer == getCurrentCommandBuffer() && "Can't end render pass on command buffer from a different frame");
 		vkCmdEndRenderPass(commandBuffer);
 	}
+	
+	void Renderer::setClearColor(const float &r, const float &g, const float &b, const float &a) noexcept{
+		clearColor.float32[0] = r;
+		clearColor.float32[1] = g;
+		clearColor.float32[2] = b;
+		clearColor.float32[3] = a;
+	}
+	
 }

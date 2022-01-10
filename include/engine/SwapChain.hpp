@@ -126,6 +126,18 @@ namespace vk_engine{
 			 */
 			bool compareSwapFormats(const SwapChain &swapChain) const noexcept { return swapChain.swapChainDepthFormat == swapChainDepthFormat && swapChain.swapChainImageFormat == swapChainImageFormat;}
 
+			/**
+			 * @brief get the wanted surface format
+			 * @return VkSurfaceFormatKHR 
+			 */
+			VkSurfaceFormatKHR getWantedFormat() const noexcept {return wantedSurfaceFormat;}
+
+			/**
+			 * @brief getthe wanted refresh type of the swap chain
+			 * @return Refresh 
+			 */
+			Refresh getRefreshType() const noexcept {return refreshType;}
+
 		private:
 			void create();
 			void createSwapChain();
