@@ -6,6 +6,7 @@
 #include "engine/PhysicalDevice.hpp"
 #include "engine/LogicalDevice.hpp"
 #include "engine/CommandPool.hpp"
+#include "engine/SwapChain.hpp"
 
 int main(int argc, char **argv){
 	vk_engine::Window window("title", 1080, 720);
@@ -31,6 +32,10 @@ int main(int argc, char **argv){
 	commandPool.setFamily(vk_engine::PhysicalDevice::GRAPHIC_FAMILY);
 	commandPool.setFlags(vk_engine::CommandPool::FLAG_TRANSIENT | vk_engine::CommandPool::FLAG_RESET_BUFFER);
 	commandPool.build(physicalDevice);
+
+	vk_engine::SwapChain swapChain(logicalDevice, {1080, 720});
+	swapChain.setRefreshType(vk_engine::SwapChain::REFRESH_FIFO_MODE);
+	swapChain.build();
 
 	while (!window.shouldClose()){
 		glfwPollEvents();

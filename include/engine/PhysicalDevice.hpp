@@ -91,6 +91,12 @@ namespace vk_engine{
 				Family type = NONE_FAMILY;
 			};
 
+			struct SwapChainSupport{
+				VkSurfaceCapabilitiesKHR capabilities;
+				std::vector<VkSurfaceFormatKHR> formats;
+				std::vector<VkPresentModeKHR> presentModes;
+			};
+
 			PhysicalDevice(Instance &instance);
 			~PhysicalDevice();
 
@@ -163,18 +169,37 @@ namespace vk_engine{
 			 */
 			VkPhysicalDeviceProperties getProperties() const noexcept {return properties;}
 
+			/**
+			 * @brief get the support of the swapChain of the physical device
+			 * @return SwapChainSupport 
+			 */
+			SwapChainSupport getSwapChainSupport() const noexcept {return swapChainSupport;}
+
+			/**
+			 * @brief return the supported format between the given formats
+			 * 
+			 * @param candidates the formats to try
+			 * @param tiling the tiling of the image
+			 * @param features the features of the format
+			 * @return VkFormat 
+			 */
+			VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+
+			/**
+			 * @brief get the memory type from the given filter and properties
+			 * 
+			 * @param typeFilter the filter used to found the image
+			 * @param properties the memory properties
+			 * @return uint32_t 
+			 */
+			uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
 			// operators
 			operator VkPhysicalDevice() const noexcept {return physicalDevice;}
 			void operator<<(const std::string &extention) {pushExtension(extention);}
 			void operator<<(const Feature &feature) {requireFeature(feature);}
 
 		private:
-			struct SwapChainSupport{
-				VkSurfaceCapabilitiesKHR capabilites;
-				std::vector<VkSurfaceFormatKHR> formats;
-				std::vector<VkPresentModeKHR> presentModes;
-			};
-
 			void checkDeviceExtensionSupport(VkPhysicalDevice device);
 			bool isSuitableDevice(VkPhysicalDevice device);
 			std::array<uint32_t, FAMILY_TYPE_COUNT> getFamilies(VkPhysicalDevice physicalDevice);
@@ -185,6 +210,7 @@ namespace vk_engine{
 			Instance &instance;
 			VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 			VkPhysicalDeviceProperties properties;
+			SwapChainSupport swapChainSupport;
 
 			std::vector<FamilyDetails> families;
 			std::vector<std::string> requiredExtensions;

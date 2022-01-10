@@ -58,6 +58,28 @@ namespace vk_engine{
 			 */
 			std::vector<std::array<VkQueue, PhysicalDevice::FAMILY_TYPE_COUNT>> getQueues() const noexcept {return queues;}
 
+			/**
+			 * @brief get the physical device of the logical device
+			 * @return PhysicalDevice reference
+			 */
+			PhysicalDevice& getPhysicalDevice() const noexcept {return physicalDevice;}
+
+			/**
+			 * @brief get the reference to the reference
+			 * @return Instance& 
+			 */
+			Instance &getInstance() const noexcept {return instance;}
+
+			/**
+			 * @brief create an image from the given informations
+			 *
+			 * @param imageInfo the information about the image creation 
+			 * @param properties the memory properties
+			 * @param image the reference to the image
+			 * @param imageMemory the reference to the allocated memory
+			 */
+			void createImageWithInfo(const VkImageCreateInfo &imageInfo, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
+
 			// operators
 			operator VkDevice() {return device;}
 			void operator<<(const char *extension) noexcept {requireExtension(extension);}
