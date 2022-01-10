@@ -37,7 +37,7 @@ namespace vk_engine{
 			/**
 			 * @brief build the commandBuffer
 			 */
-			void build(PhysicalDevice &physicalDevice);
+			void build();
 
 			// operators
 			operator VkCommandPool() const noexcept {return commandPool;}

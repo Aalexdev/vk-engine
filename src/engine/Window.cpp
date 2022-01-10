@@ -25,6 +25,9 @@ namespace vk_engine{
 		if (!window){
 			throw std::runtime_error("failed to create glfw window");
 		}
+
+		glfwSetWindowUserPointer(window, this);
+		glfwSetFramebufferSizeCallback(window, frameBufferResizedCallback);
 	}
 
 	bool Window::shouldClose() const noexcept{
@@ -37,4 +40,10 @@ namespace vk_engine{
 			throw std::runtime_error("failed to create the window surface");
 	}
 
+	void Window::frameBufferResizedCallback(GLFWwindow *window, int width, int height){
+		auto w = reinterpret_cast<Window*>(glfwGetWindowUserPointer(window));
+		w->frameBufferResized = true;
+		w->width = width;
+		w->height = height;
+	}
 }

@@ -41,8 +41,8 @@ static inline void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUti
 }
 
 namespace vk_engine{
-	Instance::Instance(){}
-	Instance::Instance(const bool &validationLayerEnable) : validationLayerEnable{validationLayerEnable}{}
+	Instance::Instance(Window &window) : window{window}{}
+	Instance::Instance(Window &window, const bool &validationLayerEnable) : window{window}, validationLayerEnable{validationLayerEnable}{}
 
 	Instance::~Instance(){
 		if (validationLayerEnable) DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
@@ -55,7 +55,7 @@ namespace vk_engine{
 		validationLayers.push_back("VK_LAYER_KHRONOS_validation");
 	}
 
-	void Instance::build(Window &window){
+	void Instance::build(){
 		if (validationLayerEnable)
 			checkValidationLayers();
 

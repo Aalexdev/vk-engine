@@ -22,6 +22,9 @@ namespace vk_engine{
 			SwapChain(LogicalDevice &device, VkExtent2D windowExtent, std::shared_ptr<SwapChain> previous);
 			~SwapChain();
 
+			SwapChain(const SwapChain &) = delete;
+			SwapChain &operator=(const SwapChain &) = delete;
+
 			/**
 			 * @brief set the refresh type of the swap chain.
 			 * @param refreshType the refresh type of the swapChain
@@ -45,7 +48,84 @@ namespace vk_engine{
 			 */
 			VkFormat findDepthFormat();
 
-		
+			/**
+			 * @brief get the frame buffer at the given index
+			 * @param index the index of the frame buffer
+			 * @return VkFramebuffer 
+			 */
+			VkFramebuffer getFrameBuffer(int index) const noexcept {return swapChainFramebuffers[index];}
+
+			/**
+			 * @brief get the vulkan render pass
+			 * @return VkRenderPass 
+			 */
+			VkRenderPass getRenderPass() const noexcept {return renderPass;}
+
+			/**
+			 * @brief get the image view of the given index
+			 * @param index the index of the image
+			 * @return VkImageView 
+			 */
+			VkImageView getImageView(int index) const noexcept {return swapChainImageViews[index];}
+
+			/**
+			 * @brief get the count of images
+			 * @return size_t 
+			 */
+			size_t imageCount() const noexcept {return swapChainImages.size();}
+
+			/**
+			 * @brief get the format of the swapchain
+			 * @return VkFormat 
+			 */
+			VkFormat getSwapChainImageFormat() const noexcept {return swapChainImageFormat;}
+
+			/**
+			 * @brief get the extent of the swap chain
+			 * @return VkExtent2D 
+			 */
+			VkExtent2D getSwapChainExtent() const noexcept {return swapChainExtent;}
+
+			/**
+			 * @brief get the width of the swap chain, the width of the swap chain extent
+			 * @return uint32_t 
+			 */
+			uint32_t width() const noexcept {return swapChainExtent.width;}
+
+			/**
+			 * @brief get the height of the swap chain, the height of the swap chain extent
+			 * @return uint32_t 
+			 */
+			uint32_t height() const noexcept {return swapChainExtent.height;}
+
+			/**
+			 * @brief get the count of frames in flight
+			 * @return const int 
+			 */
+			const int getFramesInFlight() const noexcept {return framesInFlight;}
+
+			/**
+			 * @brief get the next image
+			 * @param imageIndex a pointer to the imageIndex (must not be null)
+			 * @return VkResult 
+			 */
+			VkResult acquireNextImage(uint32_t *imageIndex);
+
+			/**
+			 * @brief submit command buffer
+			 * @param buffers the commandBuffer
+			 * @param imageIndex the image index
+			 * @return VkResult 
+			 */
+			VkResult submitCommandBuffers(const VkCommandBuffer *buffers, uint32_t *imageIndex);
+
+			/**
+			 * @brief compare this swap chain with with the given swap chain
+			 * @param swapChain the swap chain to compare
+			 * @return true 
+			 */
+			bool compareSwapFormats(const SwapChain &swapChain) const noexcept { return swapChain.swapChainDepthFormat == swapChainDepthFormat && swapChain.swapChainImageFormat == swapChainImageFormat;}
+
 		private:
 			void create();
 			void createSwapChain();
@@ -54,8 +134,6 @@ namespace vk_engine{
 			void createRenderPass();
 			void createFramebuffers();
 			void createSyncObjects();
-
-			
 
 			VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats);
 			VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes);

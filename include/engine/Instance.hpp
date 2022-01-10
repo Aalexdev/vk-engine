@@ -16,8 +16,8 @@ namespace vk_engine{
 			static constexpr uint32_t API_VERSION_1_1 = VK_API_VERSION_1_1;
 			static constexpr uint32_t API_VERSION_1_2 = VK_API_VERSION_1_2;
 
-			Instance();
-			Instance(const bool &validationLayerEnable);
+			Instance(Window &window);
+			Instance(Window &window, const bool &validationLayerEnable);
 			~Instance();
 
 			// delete copy
@@ -39,7 +39,7 @@ namespace vk_engine{
 			/**
 			 * @brief create the instance from the given extensions and parameters
 			 */
-			void build(Window &window);
+			void build();
 
 			/**
 			 * @brief set the application name
@@ -78,6 +78,12 @@ namespace vk_engine{
 			 */
 			const std::vector<const char*> &getValidationLayers() noexcept {return validationLayers;}
 
+			/**
+			 * @brief get a reference to the window
+			 * @return Window& 
+			 */
+			Window &getWindow() const noexcept {return window;}
+
 			// operators
 			operator VkInstance() const noexcept {return instance;}
 		
@@ -104,5 +110,7 @@ namespace vk_engine{
 
 			std::vector<std::string> availableExtensions;
 			std::vector<std::string> requiredExtensions;
+
+			Window &window;
 	};
 }

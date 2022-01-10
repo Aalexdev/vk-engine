@@ -6,15 +6,15 @@
 #include "engine/PhysicalDevice.hpp"
 #include "engine/LogicalDevice.hpp"
 #include "engine/CommandPool.hpp"
-#include "engine/SwapChain.hpp"
+#include "engine/Renderer.hpp"
 
 int main(int argc, char **argv){
 	vk_engine::Window window("title", 1080, 720);
 
-	vk_engine::Instance instance;
+	vk_engine::Instance instance(window);
 	instance.enableValidationLayer();
 	instance.setApiVersion(vk_engine::Instance::API_VERSION_1_2);
-	instance.build(window);
+	instance.build();
 
 	vk_engine::PhysicalDevice physicalDevice(instance);
 	physicalDevice.requireFamily(vk_engine::PhysicalDevice::GRAPHIC_FAMILY);
@@ -31,14 +31,19 @@ int main(int argc, char **argv){
 	vk_engine::CommandPool commandPool(logicalDevice);
 	commandPool.setFamily(vk_engine::PhysicalDevice::GRAPHIC_FAMILY);
 	commandPool.setFlags(vk_engine::CommandPool::FLAG_TRANSIENT | vk_engine::CommandPool::FLAG_RESET_BUFFER);
-	commandPool.build(physicalDevice);
+	commandPool.build();
 
-	vk_engine::SwapChain swapChain(logicalDevice, {1080, 720});
-	swapChain.setRefreshType(vk_engine::SwapChain::REFRESH_FIFO_MODE);
-	swapChain.build();
+	vk_engine::Renderer renderer(logicalDevice, commandPool);
 
 	while (!window.shouldClose()){
 		glfwPollEvents();
-		_sleep(0.016);
+
+		if (auto commandBuffer = renderer.beginFrame()){
+			renderer.beginSwapChainRenderPass(commandBuffer);
+
+			renderer.endSwapChainRenderPass(commandBuffer);
+			renderer.endFrame();
+		}
 	}
+    vkDeviceWaitIdle(logicalDevice);
 }

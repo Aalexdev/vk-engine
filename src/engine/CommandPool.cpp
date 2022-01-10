@@ -10,11 +10,11 @@ namespace vk_engine{
 		vkDestroyCommandPool(device, commandPool, nullptr);
 	}
 
-	void CommandPool::build(PhysicalDevice &physicalDevice){
+	void CommandPool::build(){
 		VkCommandPoolCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 
-		createInfo.queueFamilyIndex = physicalDevice.getFamilies()[family].family;
+		createInfo.queueFamilyIndex = device.getPhysicalDevice().getFamilies()[family].family;
 		createInfo.flags = flags;
 
 		if (vkCreateCommandPool(device, &createInfo, nullptr, &commandPool) != VK_SUCCESS)
