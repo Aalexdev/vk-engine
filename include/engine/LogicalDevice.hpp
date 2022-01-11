@@ -80,6 +80,18 @@ namespace vk_engine{
 			 */
 			void createImageWithInfo(const VkImageCreateInfo &imageInfo, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
 
+			/**
+			 * @brief create a buffer from the given informations
+			 * 
+			 * @param size the size of the buffer
+			 * @param usage the usage of the buffer
+			 * @param properties the buffer's properties
+			 * @param buffer a reference to the buffer
+			 * @param bufferMemory a reference to the buffer memory 
+			 */
+			void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer,VkDeviceMemory &bufferMemory);
+
+
 			// operators
 			operator VkDevice() {return device;}
 			void operator<<(const char *extension) noexcept {requireExtension(extension);}
