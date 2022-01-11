@@ -11,20 +11,20 @@
 #include <array>
 
 namespace vk_engine{
+	
+	enum Family{
+		FAMILY_GRAPHIC = 0,
+		FAMILY_PRESENT = 1,
+		FAMILY_COMPUTE = 2,
+		FAMILY_TRANSFER = 3,
+		FAMILY_PROTECTED = 4,
+		FAMILY_SPARSE_BINDING = 5,
+		FAMILY_NONE = -1
+	};
+	static constexpr int FAMILY_TYPE_COUNT = 6;
+
 	class PhysicalDevice{
 		public:
-			enum Family{
-				GRAPHIC_FAMILY = 0,
-				PRESENT_FAMILY = 1,
-				COMPUTE_FAMILY = 2,
-				TRANSFER_FAMILY = 3,
-				PROTECTED_FAMILY = 4,
-				SPARSE_BINDING_FAMILY = 5,
-				NONE_FAMILY = -1
-			};
-
-			static constexpr int FAMILY_TYPE_COUNT = 6;
-
 			enum Feature{
 				FEATURE_ROBUST_BUFFER_ACCES = 0,
 				FEATURE_FULL_DRAW_INDEX_UINT_32 = 1,
@@ -88,7 +88,7 @@ namespace vk_engine{
 
 			struct FamilyDetails{
 				uint32_t family = VK_NULL_HANDLE;
-				Family type = NONE_FAMILY;
+				Family type = FAMILY_NONE;
 			};
 
 			struct SwapChainSupport{
@@ -119,12 +119,12 @@ namespace vk_engine{
 				requiredExtensions.push_back(std::forward<Args>(extensions)...);
 			}
 
-			void requireGraphicFamily() noexcept {requiredFamilies.set(GRAPHIC_FAMILY);}
-			void requirePresentFamily() noexcept {requiredFamilies.set(PRESENT_FAMILY);}
-			void requireComputeFamily() noexcept {requiredFamilies.set(COMPUTE_FAMILY);}
-			void requireTransferFamily() noexcept {requiredFamilies.set(TRANSFER_FAMILY);}
-			void requireProtectedFamily() noexcept {requiredFamilies.set(PROTECTED_FAMILY);}
-			void requireSparseBindingFamily() noexcept {requiredFamilies.set(SPARSE_BINDING_FAMILY);}
+			void requireGraphicFamily() noexcept {requiredFamilies.set(FAMILY_GRAPHIC);}
+			void requirePresentFamily() noexcept {requiredFamilies.set(FAMILY_PRESENT);}
+			void requireComputeFamily() noexcept {requiredFamilies.set(FAMILY_COMPUTE);}
+			void requireTransferFamily() noexcept {requiredFamilies.set(FAMILY_TRANSFER);}
+			void requireProtectedFamily() noexcept {requiredFamilies.set(FAMILY_PROTECTED);}
+			void requireSparseBindingFamily() noexcept {requiredFamilies.set(FAMILY_SPARSE_BINDING);}
 
 			void requireFamily(Family family) noexcept {requiredFamilies.set(family);}
 

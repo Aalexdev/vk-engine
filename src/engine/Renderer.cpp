@@ -165,5 +165,4 @@ namespace vk_engine{
 		clearColor.float32[2] = b;
 		clearColor.float32[3] = a;
 	}
-	
 }

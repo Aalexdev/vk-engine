@@ -26,7 +26,7 @@ namespace vk_engine{
 			 * @brief set the family 
 			 * @param family the family
 			 */
-			void setFamily(PhysicalDevice::Family family) noexcept {this->family = family;}
+			void setFamily(Family family) noexcept {this->family = family;}
 
 			/**
 			 * @brief set the command pool flags
@@ -46,7 +46,7 @@ namespace vk_engine{
 			LogicalDevice &device;
 			VkCommandPool commandPool;
 
-			PhysicalDevice::Family family;
+			Family family;
 			int flags;
 	};
 }

@@ -46,9 +46,9 @@ namespace vk_engine{
 		return swapChainAdequate && checkFeatures(supportedFeatures);
 	}
 
-	std::array<uint32_t, PhysicalDevice::FAMILY_TYPE_COUNT> PhysicalDevice::getFamilies(VkPhysicalDevice physicalDevice){
+	std::array<uint32_t, FAMILY_TYPE_COUNT> PhysicalDevice::getFamilies(VkPhysicalDevice physicalDevice){
 		std::bitset<FAMILY_TYPE_COUNT> availableFamilies;
-		std::array<uint32_t, PhysicalDevice::FAMILY_TYPE_COUNT> families;
+		std::array<uint32_t, FAMILY_TYPE_COUNT> families;
 
 		// query availables queues
 		uint32_t queueFamilyCount;
@@ -62,47 +62,47 @@ namespace vk_engine{
 			if (queueFamily.queueCount == 0) continue;
 
 			// graphic queue
-			if (requiredFamilies[GRAPHIC_FAMILY] && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT){
-				families[GRAPHIC_FAMILY] = i;
-				availableFamilies.set(GRAPHIC_FAMILY);
-				this->families.push_back({i, GRAPHIC_FAMILY});
+			if (requiredFamilies[FAMILY_GRAPHIC] && queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT){
+				families[FAMILY_GRAPHIC] = i;
+				availableFamilies.set(FAMILY_GRAPHIC);
+				this->families.push_back({i, FAMILY_GRAPHIC});
 			}
 
 			// compute queue
-			if (requiredFamilies[COMPUTE_FAMILY] && queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT){
-				families[COMPUTE_FAMILY] = i;
-				availableFamilies.set(COMPUTE_FAMILY);
-				this->families.push_back({i, COMPUTE_FAMILY});
+			if (requiredFamilies[FAMILY_COMPUTE] && queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT){
+				families[FAMILY_COMPUTE] = i;
+				availableFamilies.set(FAMILY_COMPUTE);
+				this->families.push_back({i, FAMILY_COMPUTE});
 			}
 
 			// transfer queue
-			if (requiredFamilies[TRANSFER_FAMILY] && queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT){
-				families[TRANSFER_FAMILY] = i;
-				availableFamilies.set(TRANSFER_FAMILY);
-				this->families.push_back({i, TRANSFER_FAMILY});
+			if (requiredFamilies[FAMILY_TRANSFER] && queueFamily.queueFlags & VK_QUEUE_TRANSFER_BIT){
+				families[FAMILY_TRANSFER] = i;
+				availableFamilies.set(FAMILY_TRANSFER);
+				this->families.push_back({i, FAMILY_TRANSFER});
 			}
 
 			// protected queue
-			if (requiredFamilies[PROTECTED_FAMILY] && queueFamily.queueFlags & VK_QUEUE_PROTECTED_BIT){
-				families[PROTECTED_FAMILY] = i;
-				availableFamilies.set(PROTECTED_FAMILY);
-				this->families.push_back({i, PROTECTED_FAMILY});
+			if (requiredFamilies[FAMILY_PROTECTED] && queueFamily.queueFlags & VK_QUEUE_PROTECTED_BIT){
+				families[FAMILY_PROTECTED] = i;
+				availableFamilies.set(FAMILY_PROTECTED);
+				this->families.push_back({i, FAMILY_PROTECTED});
 			}
 
 			// spars queue
-			if (requiredFamilies[SPARSE_BINDING_FAMILY] && queueFamily.queueFlags & VK_QUEUE_SPARSE_BINDING_BIT){
-				families[SPARSE_BINDING_FAMILY] = i;
-				availableFamilies.set(SPARSE_BINDING_FAMILY);
-				this->families.push_back({i, SPARSE_BINDING_FAMILY});
+			if (requiredFamilies[FAMILY_SPARSE_BINDING] && queueFamily.queueFlags & VK_QUEUE_SPARSE_BINDING_BIT){
+				families[FAMILY_SPARSE_BINDING] = i;
+				availableFamilies.set(FAMILY_SPARSE_BINDING);
+				this->families.push_back({i, FAMILY_SPARSE_BINDING});
 			}
 
 			// present
 			VkBool32 presentSupport = false;
 			vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, instance.getSurface(), &presentSupport);
-			if (requiredFamilies[PRESENT_FAMILY] && presentSupport){
-				families[PRESENT_FAMILY] = i;
-				availableFamilies.set(PRESENT_FAMILY);
-				this->families.push_back({i, PRESENT_FAMILY});
+			if (requiredFamilies[FAMILY_PRESENT] && presentSupport){
+				families[FAMILY_PRESENT] = i;
+				availableFamilies.set(FAMILY_PRESENT);
+				this->families.push_back({i, FAMILY_PRESENT});
 			}
 
 			if (availableFamilies == requiredFamilies) break;

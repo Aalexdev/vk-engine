@@ -8,15 +8,17 @@
 // std
 #include <memory>
 #include <vector>
+#include <cassert>
 
 namespace vk_engine{
+	
+	enum Refresh{
+		REFRESH_MAILBOX_MODE = VK_PRESENT_MODE_MAILBOX_KHR,
+		REFRESH_IMMEDIATE_MODE = VK_PRESENT_MODE_IMMEDIATE_KHR,
+		REFRESH_FIFO_MODE = VK_PRESENT_MODE_FIFO_KHR,
+	};
 	class SwapChain{
 		public:
-			enum Refresh{
-				REFRESH_MAILBOX_MODE = VK_PRESENT_MODE_MAILBOX_KHR,
-				REFRESH_IMMEDIATE_MODE = VK_PRESENT_MODE_IMMEDIATE_KHR,
-				REFRESH_FIFO_MODE = VK_PRESENT_MODE_FIFO_KHR,
-			};
 
 			SwapChain(LogicalDevice &device, VkExtent2D windowExtent);
 			SwapChain(LogicalDevice &device, VkExtent2D windowExtent, std::shared_ptr<SwapChain> previous);
@@ -105,6 +107,12 @@ namespace vk_engine{
 			const int getFramesInFlight() const noexcept {return framesInFlight;}
 
 			/**
+			 * @brief set how many frames ther are in the swapChain (double, triple, quadruple buffering)
+			 * @param framesInFlight the count of images
+			 */
+			void setFrameInFlight(const int &framesInFlight) noexcept {assert(!builded && "cannot set the image in flight attribute while the swap chain is runing"); this->framesInFlight = framesInFlight;}
+
+			/**
 			 * @brief get the next image
 			 * @param imageIndex a pointer to the imageIndex (must not be null)
 			 * @return VkResult 
@@ -138,6 +146,12 @@ namespace vk_engine{
 			 */
 			Refresh getRefreshType() const noexcept {return refreshType;}
 
+			/**
+			 * @brief require or not the depthBuffer component of the swapChain
+			 * @param depthBufferRequire require the depthBuffer
+			 */
+			void requireDepthBuffer(const bool &depthBufferRequire = true)  noexcept {assert(!builded && "cannot require the swapChain depthBuffer while the swap chain is runing"); depthBufferEnable = depthBufferRequire;}
+
 		private:
 			void create();
 			void createSwapChain();
@@ -152,6 +166,7 @@ namespace vk_engine{
 			VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
 
 			VkFormat swapChainImageFormat;
+				
 			VkFormat swapChainDepthFormat;
 			VkExtent2D swapChainExtent;
 
@@ -180,5 +195,7 @@ namespace vk_engine{
 			VkSurfaceFormatKHR wantedSurfaceFormat = {VK_FORMAT_B8G8R8A8_SRGB, VK_COLOR_SPACE_SRGB_NONLINEAR_KHR};
 
 			int framesInFlight = 2;
+			bool depthBufferEnable = false;
+			bool builded = false;
 	};
 }

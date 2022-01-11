@@ -10,6 +10,7 @@
 #include "engine/Renderer.hpp"
 
 int main(int argc, char **argv){
+
 	vk_engine::Window window("title", 1080, 720);
 
 	vk_engine::Instance instance(window);
@@ -18,8 +19,8 @@ int main(int argc, char **argv){
 	instance.build();
 
 	vk_engine::PhysicalDevice physicalDevice(instance);
-	physicalDevice.requireFamily(vk_engine::PhysicalDevice::GRAPHIC_FAMILY);
-	physicalDevice.requireFamily(vk_engine::PhysicalDevice::PRESENT_FAMILY);
+	physicalDevice.requireFamily(vk_engine::FAMILY_GRAPHIC);
+	physicalDevice.requireFamily(vk_engine::FAMILY_PRESENT);
 	physicalDevice.requireFeature(vk_engine::PhysicalDevice::FEATURE_SAMPLER_ANISOTROPY);
 	physicalDevice.build();
 
@@ -30,16 +31,15 @@ int main(int argc, char **argv){
 	logicalDevice.build();
 
 	vk_engine::CommandPool commandPool(logicalDevice);
-	commandPool.setFamily(vk_engine::PhysicalDevice::GRAPHIC_FAMILY);
+	commandPool.setFamily(vk_engine::FAMILY_GRAPHIC);
 	commandPool.setFlags(vk_engine::CommandPool::FLAG_TRANSIENT | vk_engine::CommandPool::FLAG_RESET_BUFFER);
 	commandPool.build();
 
 	vk_engine::Renderer renderer(logicalDevice, commandPool);
-	renderer.getSwapChain().setRefreshType(vk_engine::SwapChain::REFRESH_FIFO_MODE); // V-sync
+	renderer.getSwapChain().setRefreshType(vk_engine::REFRESH_FIFO_MODE); // V-sync
 	renderer.setAutoUpdateViewportSize(false);
 	renderer.setViewPortSize(500.f, 500.f);
 	renderer.setClearColor(1.f);
-	
 	renderer.build();
 	
 	auto startTime = std::chrono::high_resolution_clock::now();
@@ -66,5 +66,6 @@ int main(int argc, char **argv){
 			fps++;
 		}
 	}
+
     vkDeviceWaitIdle(logicalDevice);
 }

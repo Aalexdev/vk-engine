@@ -40,7 +40,7 @@ namespace vk_engine{
 	}
 
 	void copyBuffer(CommandPool &commandPool, LogicalDevice &device, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size){
-		SingleTimeCommands commandBuffer(commandPool, device, device.getQueues()[0][PhysicalDevice::GRAPHIC_FAMILY]);
+		SingleTimeCommands commandBuffer(commandPool, device, device.getQueues()[0][FAMILY_GRAPHIC]);
 
 		VkBufferCopy copyRegion{};
 		copyRegion.dstOffset = 0;
@@ -51,7 +51,7 @@ namespace vk_engine{
 	}
 
 	void copyBufferToImage(CommandPool &commandPool, LogicalDevice &device, VkBuffer buffer, VkImage image, uint32_t imageWidth, uint32_t imageHeight, uint32_t imageLayerCount){
-		SingleTimeCommands commandBuffer(commandPool, device, device.getQueues()[0][PhysicalDevice::GRAPHIC_FAMILY]);
+		SingleTimeCommands commandBuffer(commandPool, device, device.getQueues()[0][FAMILY_GRAPHIC]);
 
 		VkBufferImageCopy region{};
 		region.bufferOffset = 0;

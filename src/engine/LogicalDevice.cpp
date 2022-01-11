@@ -31,7 +31,7 @@ namespace vk_engine{
 		}
 		
 		for (auto &queueFamily : uniqueFamilies){
-			assert(queueFamily.family == VK_NULL_HANDLE || queueFamily.type == PhysicalDevice::NONE_FAMILY && "cannot use a non initialized queue family");
+			assert(queueFamily.family == VK_NULL_HANDLE || queueFamily.type == FAMILY_NONE && "cannot use a non initialized queue family");
 
 			VkDeviceQueueCreateInfo queueCreateInfo = {};
 			queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;

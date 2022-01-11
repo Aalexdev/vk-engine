@@ -56,7 +56,7 @@ namespace vk_engine{
 			 * @brief get the queues
 			 * @return std::vector<std::array<VkQueue, PhysicalDevice::FAMILY_TYPE_COUNT>> 
 			 */
-			std::vector<std::array<VkQueue, PhysicalDevice::FAMILY_TYPE_COUNT>> getQueues() const noexcept {return queues;}
+			std::vector<std::array<VkQueue, FAMILY_TYPE_COUNT>> getQueues() const noexcept {return queues;}
 
 			/**
 			 * @brief get the physical device of the logical device
@@ -93,6 +93,6 @@ namespace vk_engine{
 			std::vector<float> queuePriorities;
 			uint32_t queueCount = 0;
 
-			std::vector<std::array<VkQueue, PhysicalDevice::FAMILY_TYPE_COUNT>> queues;
+			std::vector<std::array<VkQueue, FAMILY_TYPE_COUNT>> queues;
 	};
 }

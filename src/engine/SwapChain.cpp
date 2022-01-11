@@ -13,8 +13,8 @@ namespace vk_engine{
 	void SwapChain::build(){
 		create();
 		oldSwapChain = nullptr;
+		builded = true;
 	}
-
 
 	SwapChain::~SwapChain(){
 		for (auto imageView : swapChainImageViews)
@@ -29,8 +29,12 @@ namespace vk_engine{
 
 		for (int i=0; i<depthImages.size(); i++) {
 			vkDestroyImageView(device, depthImageViews[i], nullptr);
-			vkDestroyImage(device, depthImages[i], nullptr);
-			vkFreeMemory(device, depthImageMemorys[i], nullptr);
+
+			if (depthBufferEnable){
+				vkDestroyImage(device, depthImages[i], nullptr);
+				vkFreeMemory(device, depthImageMemorys[i], nullptr);
+			}
+			
 		}
 
 		for (auto framebuffer : swapChainFramebuffers) {
@@ -51,7 +55,11 @@ namespace vk_engine{
 		createSwapChain();
 		createImageViews();
 		createRenderPass();
-		createDepthResources();
+
+		if (depthBufferEnable){
+			createDepthResources();
+		}
+
 		createFramebuffers();
 		createSyncObjects();
 	}
@@ -84,7 +92,7 @@ namespace vk_engine{
 		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 		// queus
-		uint32_t queueFamilyIndices[] = {device.getPhysicalDevice().getFamily(PhysicalDevice::GRAPHIC_FAMILY).family, device.getPhysicalDevice().getFamily(PhysicalDevice::PRESENT_FAMILY).family};
+		uint32_t queueFamilyIndices[] = {device.getPhysicalDevice().getFamily(FAMILY_GRAPHIC).family, device.getPhysicalDevice().getFamily(FAMILY_PRESENT).family};
 
 		// if the graphyc family is different than the present family
 		if (queueFamilyIndices[0] != queueFamilyIndices[1]){
@@ -186,8 +194,11 @@ namespace vk_engine{
 		depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 		VkAttachmentReference depthAttachmentRef{};
-		depthAttachmentRef.attachment = 1;
-		depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		if (depthBufferEnable){
+			depthAttachmentRef.attachment = 1;
+			depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		}
+
 
 		VkAttachmentDescription colorAttachment = {};
 		colorAttachment.format = swapChainImageFormat;
@@ -207,7 +218,12 @@ namespace vk_engine{
 		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 		subpass.colorAttachmentCount = 1;
 		subpass.pColorAttachments = &colorAttachmentRef;
-		subpass.pDepthStencilAttachment = &depthAttachmentRef;
+
+		if (depthBufferEnable){
+			subpass.pDepthStencilAttachment = &depthAttachmentRef;
+		} else {
+			subpass.pDepthStencilAttachment = nullptr;
+		}
 
 		VkSubpassDependency dependency = {};
 		dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
@@ -217,7 +233,15 @@ namespace vk_engine{
 		dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
-		std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
+		std::vector<VkAttachmentDescription> attachments;
+
+		if (depthBufferEnable){
+			attachments.push_back(colorAttachment);
+			attachments.push_back(depthAttachment);
+		} else {
+			attachments.push_back(colorAttachment);
+		}
+
 		VkRenderPassCreateInfo renderPassInfo = {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 		renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -235,7 +259,15 @@ namespace vk_engine{
 	void SwapChain::createFramebuffers() {
 		swapChainFramebuffers.resize(swapChainImages.size());
 		for (size_t i=0; i<swapChainImages.size(); i++) {
-			std::array<VkImageView, 2> attachments = {swapChainImageViews[i], depthImageViews[i]};
+			
+			std::vector<VkImageView> attachments;
+			
+			if (depthBufferEnable){
+				attachments.push_back(swapChainImageViews[i]);
+				attachments.push_back(depthImageViews[i]);
+			} else {
+				attachments.push_back(swapChainImageViews[i]);
+			}
 
 			VkExtent2D swapChainExtent = swapChainExtent;
 			VkFramebufferCreateInfo framebufferInfo = {};
@@ -294,7 +326,6 @@ namespace vk_engine{
 
 			if (vkCreateImageView(device, &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS)
 				throw std::runtime_error("failed to create texture image view!");
-			
 		}
 	}
 
@@ -353,7 +384,7 @@ namespace vk_engine{
 		submitInfo.pSignalSemaphores = signalSemaphores;
 
 		vkResetFences(device, 1, &inFlightFences[currentFrame]);
-		if (vkQueueSubmit(device.getQueues()[0][PhysicalDevice::GRAPHIC_FAMILY], 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS)
+		if (vkQueueSubmit(device.getQueues()[0][FAMILY_GRAPHIC], 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS)
 			throw std::runtime_error("failed to submit draw command buffer!");
 
 		VkPresentInfoKHR presentInfo = {};
@@ -368,7 +399,7 @@ namespace vk_engine{
 
 		presentInfo.pImageIndices = imageIndex;
 
-		auto result = vkQueuePresentKHR(device.getQueues()[0][PhysicalDevice::PRESENT_FAMILY], &presentInfo);
+		auto result = vkQueuePresentKHR(device.getQueues()[0][FAMILY_PRESENT], &presentInfo);
 
 		currentFrame = (currentFrame + 1) % framesInFlight;
 
