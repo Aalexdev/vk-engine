@@ -8,6 +8,7 @@
 #include "engine/LogicalDevice.hpp"
 #include "engine/CommandPool.hpp"
 #include "engine/Renderer.hpp"
+#include "engine/Image.hpp"
 
 int main(int argc, char **argv){
 
@@ -41,6 +42,12 @@ int main(int argc, char **argv){
 	renderer.setViewPortSize(500.f, 500.f);
 	renderer.setClearColor(0.05f, 0.05f, 0.05f, 0.05f);
 	renderer.build();
+
+	vk_engine::Image image(logicalDevice, commandPool, "res/vulkan-logo.png");
+	image.setFormat(vk_engine::Image::FORMAT_RGB);
+	image.setSourceFormat(vk_engine::Image::FORMAT_ARGB);
+	image.setFilter(vk_engine::Image::FILTER_NEARTEST);
+	image.build();
 	
 	auto startTime = std::chrono::high_resolution_clock::now();
 	float counter = 0.f;

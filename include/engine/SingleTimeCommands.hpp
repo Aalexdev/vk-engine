@@ -58,4 +58,16 @@ namespace vk_engine{
 	 * @param imageLayerCount the count of layers of the image
 	 */
 	void copyBufferToImage(CommandPool &commandPool, LogicalDevice &device, VkBuffer buffer, VkImage image, uint32_t imageWidth, uint32_t imageHeight, uint32_t imageLayerCount);
+
+	/**
+	 * @brief make a transition between two layouts
+	 * 
+	 * @param commandPool a reference to a commandPool
+	 * @param device a reference to a LogicalDevice
+	 * @param image the image to convert
+	 * @param format the format of the image
+	 * @param oldLayout the old layout of the image
+	 * @param newLayout the new layout of the image
+	 */
+	void transitionImageLayout(CommandPool &commandPool, LogicalDevice &device, VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
 }
