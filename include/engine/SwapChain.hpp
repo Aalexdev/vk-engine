@@ -152,6 +152,12 @@ namespace vk_engine{
 			 */
 			void requireDepthBuffer(const bool &depthBufferRequire = true)  noexcept {assert(!builded && "cannot require the swapChain depthBuffer while the swap chain is runing"); depthBufferEnable = depthBufferRequire;}
 
+			/**
+			 * @brief get the current image 
+			 * @return VkImage 
+			 */
+			VkImage getCurrentImage() const noexcept {return swapChainImages[currentFrame];}
+
 		private:
 			void create();
 			void createSwapChain();

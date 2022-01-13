@@ -3,7 +3,7 @@
 // std
 #include <stdexcept>
 namespace vk_engine{
-	SingleTimeCommands::SingleTimeCommands(CommandPool &commandPool, LogicalDevice &device, VkQueue &queue) : commandPool{commandPool}, device{device}, queue{queue}{
+	SingleTimeCommands::SingleTimeCommands(CommandPool &commandPool, LogicalDevice &device, VkQueue queue) : commandPool{commandPool}, device{device}, queue{queue}{
 		begin();
 	}
 

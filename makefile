@@ -1,44 +1,66 @@
+# project
+VERSION = 0.1.0
+
+# compiler
 CXX = g++.exe
 STD_VERSION = c++17
-EXEC = prog
-SRC = $(wildcard src/*.cpp) $(wildcard src/*/*.cpp) $(wildcard src/*/*/*.cpp)
-OBJ = $(addprefix obj/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
-LIB = libs/
+LIBSFLAGS = -lmingw32 -lglfw3 -lgdi32 -lvulkan-1
+CFLAGS = -Wall -g3
+DEFINES = -DVERSION=$(VERSION)
 INCLUDE = include/
-CFLAGS = -l mingw32 -l glfw3 -lgdi32 -lvulkan-1
-DEFINES = -D DEBUG
 
-all : $(EXEC)
+# directories
+BIN = bin
+SRC = src
+OBJ = obj
+LIB = libs
+EXEC = prog
 
-obj/%.o : src/%.cpp
-	@echo compile $@ from $<
-	@$(CXX) -std=$(STD_VERSION) -o $@ -c $< -I $(INCLUDE) $(DEFINES)
+# source files
+SRCS = $(wildcard **/*.cpp) $(wildcard $(SRC)/**/*.cpp)
+OBJS := $(patsubst %.cpp, $(OBJ)/%.o, $(notdir $(SRCS)))
 
-obj/%.o : src/*/%.cpp
-	@echo compile $@ from $<
-	@$(CXX) -std=$(STD_VERSION) -o $@ -c $< -I $(INCLUDE) $(DEFINES)
+# git
+PUSH_BRANCHE = master
 
-obj/%.o : src/*/*/%.cpp
-	@echo compile $@ from $<
-	@$(CXX) -std=$(STD_VERSION) -o $@ -c $< -I $(INCLUDE) $(DEFINES)
+all: $(EXEC)
 
-$(EXEC) : $(OBJ)
-	@ $(CXX) -time -std=$(STD_VERSION) obj/*.o -I $(INCLUDE) -L $(LIB) -o $(EXEC) $(CFLAGS) $(DEFINES)
-	@echo compiling finish with success
+release: CFLAGS = -Wall -O2 -DNDEBUG
+release: clean
+release: $(EXEC)
 
-dbg : $(OBJ)
-	$(CXX) -std=$(STD_VERSION) -g3 $(SRC) -I $(INCLUDE) -L $(LIB) -o $(EXEC) $(CFLAGS) $(DEFINES)
+clean:
+	del $(OBJ)\*
 
-clear:
-	@del obj\*.o
+run:
+	$(BIN)/$(EXEC)
+
+$(EXEC) : $(OBJS)
+	$(CXX) -std=$(STD_VERSION) $(OBJ)/*.o -I $(INCLUDE) -L $(LIB) -o $(BIN)\$(EXEC) $(CFLAGS) $(DEFINES) $(LIBSFLAGS)
+
+$(OBJ)/%.o : $(SRC)/%.cpp
+	$(CXX) -std=$(STD_VERSION) -o $@ -c $< -I $(INCLUDE) $(DEFINES) $(CFLAGS)
+
+$(OBJ)/%.o : $(SRC)/*/%.cpp
+	$(CXX) -std=$(STD_VERSION) -o $@ -c $< -I $(INCLUDE) $(DEFINES) $(CFLAGS)
+
+$(OBJ)/%.o : $(SRC)/*/*/%.cpp
+	$(CXX) -std=$(STD_VERSION) -o $@ -c $< -I $(INCLUDE) $(DEFINES) $(CFLAGS)
 
 info:
 	@echo -----------------------------------------------------
-	@echo compiling info :                
+	@echo info :                
 	@echo 	compiler                     : $(CXX)
 	@echo 	compiler standart version    : $(STD_VERSION)
-	@echo 	include path                 : $(INCLUDE)
-	@echo 	flags                        : $(FLAGS)
-	@echo 	libs directory               : $(LIB)
+	@echo 	flags                        : $(CFLAGS)
+	@echo 	defines                      : $(DEFINES)
 	@echo 	executable output            : $(EXEC)
+	@echo 	libs directory               : $(LIB)
+	@echo 	binary directory             : $(BIN)
+	@echo 	source code directory        : $(SRC)
+	@echo 	compiled object directory    : $(OBJ)
+	@echo 	include directory            : $(INCLUDE)
 	@echo -----------------------------------------------------
+
+compress:
+	7z a -tzip vk_engine_$(VERSION).zip

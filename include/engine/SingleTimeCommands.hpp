@@ -9,7 +9,7 @@
 namespace vk_engine{
 	class SingleTimeCommands{
 		public:
-			SingleTimeCommands(CommandPool &commandPool, LogicalDevice &device, VkQueue &queue);
+			SingleTimeCommands(CommandPool &commandPool, LogicalDevice &device, VkQueue queue);
 			~SingleTimeCommands();
 
 			// avoid copy
@@ -32,7 +32,7 @@ namespace vk_engine{
 			VkCommandBuffer commandBuffer;
 			CommandPool &commandPool;
 			LogicalDevice &device;
-			VkQueue &queue;
+			VkQueue queue;
 	};
 	
 	/**

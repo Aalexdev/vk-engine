@@ -38,8 +38,7 @@ int main(int argc, char **argv){
 
 	vk_engine::Renderer renderer(logicalDevice, commandPool);
 	renderer.getSwapChain().setRefreshType(vk_engine::REFRESH_FIFO_MODE); // V-sync
-	renderer.setAutoUpdateViewportSize(false);
-	renderer.setViewPortSize(500.f, 500.f);
+	renderer.setAutoUpdateViewportSize(true);
 	renderer.setClearColor(0.05f, 0.05f, 0.05f, 0.05f);
 	renderer.build();
 

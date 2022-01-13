@@ -3,10 +3,8 @@
         {
             "type": "cppbuild",
             "label": "C/C++: g++.exe build active file",
-            "command": "make",
-            "args": [
-                "dbg"
-            ],
+            "command": "",
+            "args": [],
             "options": {
                 "cwd": "${workspaceFolder}"
             },
