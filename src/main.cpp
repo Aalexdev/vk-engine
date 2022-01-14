@@ -43,9 +43,10 @@ int main(int argc, char **argv){
 	renderer.build();
 
 	vk_engine::Image image(logicalDevice, commandPool, "res/vulkan-logo.png");
-	image.setFormat(vk_engine::Image::FORMAT_RGB);
-	image.setSourceFormat(vk_engine::Image::FORMAT_ARGB);
+	image.setFormat(vk_engine::Image::FORMAT_RGBA);
+	image.setSourceFormat(vk_engine::Image::FORMAT_RGBA);
 	image.setFilter(vk_engine::Image::FILTER_NEARTEST);
+	image.setNomalizedCoordonates(true);
 	image.build();
 	
 	auto startTime = std::chrono::high_resolution_clock::now();

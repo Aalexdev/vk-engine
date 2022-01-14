@@ -130,7 +130,7 @@ namespace vk_engine{
 		vkBindImageMemory(device, image, memory, 0);
 
 		transitionImageLayout(commandPool, device, image, static_cast<VkFormat>(format), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		copyBufferToImage(commandPool, device, stagingBuffer, image, width, height, layerCount);
+		copyBufferToImage(commandPool, device, stagingBuffer, image, width, height, 1);
 		transitionImageLayout(commandPool, device, image, static_cast<VkFormat>(format), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 		createImageView();
@@ -139,7 +139,7 @@ namespace vk_engine{
 
 	uint32_t Image::formatToLayerCount(Format format) noexcept{
 		switch (format){
-			case FORMAT_ARGB: return 4;
+			case FORMAT_RGBA: return 4;
 			case FORMAT_RGB: return 3;
 			case FORMAT_RG: return 2;
 			case FORMAT_R: return 1;

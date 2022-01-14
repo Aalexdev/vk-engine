@@ -15,11 +15,11 @@ namespace vk_engine{
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
 
-		viewport.width = device.getInstance().getWindow().getExtent().width;
-		viewport.height = device.getInstance().getWindow().getExtent().height;
+		viewport.width = 1;
+		viewport.height = 1;
 
 		scissor.offset = {0, 0};
-		scissor.extent = device.getInstance().getWindow().getExtent();
+		scissor.extent = {1, 1};
 	}
 
 	Renderer::~Renderer(){
@@ -148,6 +148,10 @@ namespace vk_engine{
 		renderPassBeginInfo.pClearValues = clearValues.data();
 
 		vkCmdBeginRenderPass(commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+		viewport.width = static_cast<float>(swapChain->getSwapChainExtent().width);
+		viewport.height = static_cast<float>(swapChain->getSwapChainExtent().height);
+		scissor.extent = swapChain->getSwapChainExtent();
 
 		vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);

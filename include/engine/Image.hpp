@@ -16,7 +16,7 @@ namespace vk_engine{
 			~Image();
 
 			enum Format{
-				FORMAT_ARGB = VK_FORMAT_A8B8G8R8_SRGB_PACK32,
+				FORMAT_RGBA = VK_FORMAT_R8G8B8A8_SRGB,
 				FORMAT_RGB = VK_FORMAT_R8G8B8_SRGB,
 				FORMAT_RG = VK_FORMAT_R8G8_SRGB,
 				FORMAT_R = VK_FORMAT_R8_SRGB
@@ -133,6 +133,6 @@ namespace vk_engine{
 			Format format = FORMAT_RGB;
 			Format srcFormat = FORMAT_RGB;
 			Filter filter = FILTER_LINEAR;
-			bool normalizeCoordonates = false;
+			bool normalizeCoordonates = true;
 	};
 }
