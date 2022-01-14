@@ -27,7 +27,7 @@ namespace vk_engine{
 			swapChain = VK_NULL_HANDLE;
 		}
 
-		for (int i=0; i<depthImages.size(); i++) {
+		for (int i=0; i<static_cast<int>(depthImages.size()); i++) {
 			vkDestroyImageView(device, depthImageViews[i], nullptr);
 
 			if (depthBufferEnable){
@@ -44,7 +44,7 @@ namespace vk_engine{
 		vkDestroyRenderPass(device, renderPass, nullptr);
 
 		// cleanup synchronization objects
-		for (size_t i=0; i<framesInFlight; i++) {
+		for (size_t i=0; i<static_cast<size_t>(framesInFlight); i++) {
 			vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
 			vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
 			vkDestroyFence(device, inFlightFences[i], nullptr);
@@ -89,7 +89,7 @@ namespace vk_engine{
 		createInfo.imageColorSpace = surfaceFormat.colorSpace;
 		createInfo.imageExtent = extent;
 		createInfo.imageArrayLayers = 1;
-		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+		createInfo.imageUsage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
 		// queus
 		uint32_t queueFamilyIndices[] = {device.getPhysicalDevice().getFamily(FAMILY_GRAPHIC).family, device.getPhysicalDevice().getFamily(FAMILY_PRESENT).family};
@@ -162,7 +162,6 @@ namespace vk_engine{
 		}
 	}
 
-	
 	void SwapChain::createImageViews() {
 		swapChainImageViews.resize(swapChainImages.size());
 		for (size_t i = 0; i < swapChainImages.size(); i++) {
@@ -212,7 +211,7 @@ namespace vk_engine{
 
 		VkAttachmentReference colorAttachmentRef = {};
 		colorAttachmentRef.attachment = 0;
-		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 
 		VkSubpassDescription subpass = {};
 		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
@@ -294,7 +293,7 @@ namespace vk_engine{
 		depthImageMemorys.resize(swapChainImages.size());
 		depthImageViews.resize(swapChainImages.size());
 
-		for (int i = 0; i < depthImages.size(); i++) {
+		for (int i = 0; i < static_cast<int>(depthImages.size()); i++) {
 			VkImageCreateInfo imageInfo{};
 			imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 			imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -342,7 +341,7 @@ namespace vk_engine{
 		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-		for (size_t i = 0; i < framesInFlight; i++) {
+		for (size_t i = 0; i < static_cast<size_t>(framesInFlight); i++) {
 			if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS ||
 				vkCreateSemaphore(device, &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS ||
 				vkCreateFence(device, &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS)

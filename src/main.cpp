@@ -58,6 +58,25 @@ int main(int argc, char **argv){
 		if (auto commandBuffer = renderer.beginFrame()){
 			renderer.beginSwapChainRenderPass(commandBuffer);
 
+			VkImageBlit blit{};
+			blit.srcOffsets[0] = {0, 0, 0};
+			blit.srcOffsets[1] = {image.width(), image.height(), 1};
+			
+			blit.dstOffsets[0] = {0, 0, 0};
+			blit.dstOffsets[1] = {image.width(), image.height(), 1};
+
+			blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			blit.dstSubresource.baseArrayLayer = 0;
+			blit.dstSubresource.layerCount = 1;
+			blit.dstSubresource.mipLevel = 0;
+
+			blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			blit.srcSubresource.baseArrayLayer = 0;
+			blit.srcSubresource.layerCount = 1;
+			blit.srcSubresource.mipLevel = 0;
+
+			vkCmdBlitImage(commandBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, renderer.getSwapChain().getCurrentImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1, &blit, VK_FILTER_LINEAR);
+
 			renderer.endSwapChainRenderPass(commandBuffer);
 			renderer.endFrame();
 		}

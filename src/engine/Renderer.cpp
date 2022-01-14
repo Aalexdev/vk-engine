@@ -52,7 +52,7 @@ namespace vk_engine{
 	void Renderer::recreateSwapChain(){
 		VkExtent2D extent = device.getInstance().getWindow().getExtent();
 
-		while(extent.width == 0 | extent.height == 0){
+		while(extent.width == 0 || extent.height == 0){
 			extent = device.getInstance().getWindow().getExtent();
 			glfwWaitEvents();
 		}

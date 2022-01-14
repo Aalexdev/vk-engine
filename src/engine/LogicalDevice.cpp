@@ -31,7 +31,7 @@ namespace vk_engine{
 		}
 		
 		for (auto &queueFamily : uniqueFamilies){
-			assert(queueFamily.family == VK_NULL_HANDLE || queueFamily.type == FAMILY_NONE && "cannot use a non initialized queue family");
+			assert((queueFamily.family == VK_NULL_HANDLE || queueFamily.type == FAMILY_NONE) && "cannot use a non initialized queue family");
 
 			VkDeviceQueueCreateInfo queueCreateInfo = {};
 			queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -65,7 +65,7 @@ namespace vk_engine{
 			throw std::runtime_error("failed to create logical device");
 		
 		queues.resize(queueCount);
-		for (int i=0; i<queueCount; i++){
+		for (int i=0; i<static_cast<int>(queueCount); i++){
 			// set all of the queues to nullptr
 			queues[i].fill(nullptr);
 
