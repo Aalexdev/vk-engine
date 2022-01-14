@@ -29,8 +29,11 @@ release: CFLAGS = -Wall -O2 -DNDEBUG
 release: clean
 release: $(EXEC)
 
+rebuild: clean
+rebuild: $(EXEC)
+
 clean:
-	del $(OBJ)\*
+	@del $(OBJ)\*.o
 
 run:
 	$(BIN)/$(EXEC)
