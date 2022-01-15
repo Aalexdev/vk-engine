@@ -10,59 +10,40 @@
 #include <unordered_map>
 #include <cassert>
 #include <stdexcept>
+#include <string>
+#include <vector>
+#include <memory>
 
 namespace vk_engine{
-	
 	class Pipeline{
 		public:
-			enum descriptorType{
-				DESCRIPTOR_SAMPLER = VK_DESCRIPTOR_TYPE_SAMPLER,
-				DESCRIPTOR_COMBINED_IMAGE_SAMPLER = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER,
-				DESCRIPTOR_SAMPLED_IMAGE = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE,
-				DESCRIPTOR_STORAGE_IMAGE = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,
-				DESCRIPTOR_UNIFORM_TEXEL_BUFFER = VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER,
-				DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER = VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER,
-				DESCRIPTOR_UNIFORM_BUFFER = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-				DESCRIPTOR_STORAGE_BUFFER = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-				DESCRIPTOR_UNIFORM_BUFFER_DYNAMIC = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC,
-				DESCRIPTOR_STORAGE_BUFFER_DYNAMIC = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC,
-				DESCRIPTOR_INPUT_ATTACHMENT = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT,
-				DESCRIPTOR_INLINE_UNIFORM_BLOCK_EXT = VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK_EXT,
-				DESCRIPTOR_ACCELERATION_STRUCTURE_KHR = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR,
-				DESCRIPTOR_ACCELERATION_STRUCTURE_NV = VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV,
-				DESCRIPTOR_MUTABLE_VALVE = VK_DESCRIPTOR_TYPE_MUTABLE_VALVE
-			};	
+			struct ConfigInfo {
+				ConfigInfo(){defaultPipelineConfigInfo(*this);}
 
-			enum Stage{
-				STAGE_VERTEX = VK_SHADER_STAGE_VERTEX_BIT,
-				STAGE_TESSELLATION_CONTROL = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT,
-				STAGE_TESSELLATION_EVALuATION = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT,
-				STAGE_GEOMETRY = VK_SHADER_STAGE_GEOMETRY_BIT,
-				STAGE_FRAGMENT = VK_SHADER_STAGE_FRAGMENT_BIT,
-				STAGE_COMPUTE_ = VK_SHADER_STAGE_COMPUTE_BIT,
-				STAGE_ALL_GRAPHICS = VK_SHADER_STAGE_ALL_GRAPHICS,
-				STAGE_ALL = VK_SHADER_STAGE_ALL,
-				STAGE_RAYGEN = VK_SHADER_STAGE_RAYGEN_BIT_KHR,
-				STAGE_ANY_HIT = VK_SHADER_STAGE_ANY_HIT_BIT_KHR,
-				STAGE_CLOSEST_HIT = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR,
-				STAGE_MISS_HIT = VK_SHADER_STAGE_MISS_BIT_KHR,
-				STAGE_INTERSECTION = VK_SHADER_STAGE_INTERSECTION_BIT_KHR,
-				STAGE_CALLABLE = VK_SHADER_STAGE_CALLABLE_BIT_KHR,
-				STAGE_TASK = VK_SHADER_STAGE_TASK_BIT_NV,
-				STAGE_MESH = VK_SHADER_STAGE_MESH_BIT_NV,
-				STAGE_SUBPASS_SHADING = VK_SHADER_STAGE_SUBPASS_SHADING_BIT_HUAWEI
-			};
+				ConfigInfo(const ConfigInfo&) = delete;
+				ConfigInfo &operator=(const ConfigInfo&) = delete;
 
-			struct Descriptor{
-				uint32_t count = 1;
-				descriptorType type = DESCRIPTOR_UNIFORM_BUFFER;
-				Stage stage = STAGE_VERTEX;
-				size_t offset = 0;
-				const size_t range = 0;
+				VkPipelineViewportStateCreateInfo viewportInfo;
+				VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
+				VkPipelineRasterizationStateCreateInfo rasterizationInfo;
+				VkPipelineMultisampleStateCreateInfo multisampleInfo;
+				VkPipelineColorBlendAttachmentState colorBlendAttachment;
+				VkPipelineColorBlendStateCreateInfo colorBlendInfo;
+				VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+				std::vector<VkDynamicState> dynamicStateEnables;
+				VkPipelineDynamicStateCreateInfo dynamicStateInfo;
+				VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+				VkRenderPass renderPass = VK_NULL_HANDLE;
+				uint32_t subpass = 0;
 			};
+        
 			
 			Pipeline(LogicalDevice &device, SwapChain &swapChain);
 			~Pipeline();
+
+			// void vopy
+			Pipeline(const Pipeline &) = delete;
+			Pipeline &operator=(const Pipeline &) = delete;
 
 			/**
 			 * @brief build the pipeline from the given parameters
@@ -70,45 +51,49 @@ namespace vk_engine{
 			void build();
 
 			/**
-			 * @brief register the given type at the binding
-			 * 
-			 * @tparam T the type to use a descriptor 
-			 * @param binding the binding location of the descriptor
+			 * @brief return true if the pipeline is builded, false if not
 			 */
-			template<typename T> void registerDescriptor(uint32_t binding = 0){
-				assert(descriptors.find(binding) == descriptors.end() && "registering two descriptors at the same binding");
-				descriptors.insert({binding, (Descriptor){.range = sizeof(T)}});
-			}
+			bool isBuilded() const noexcept {return builded;}
 
 			/**
-			 * @brief get the descriptor at the given binding
-			 * 
-			 * @param binding 
-			 * @return Descriptor& 
+			 * @brief get the default pipeline configuration
+			 * @param configInfo a reference to a ConfigInfo instance
 			 */
-			Descriptor& get(uint32_t binding){
-				assert(descriptors.find(binding) != descriptors.end() && "cannot get a non registered descriptor");
-				return descriptors.find(binding)->second;
-			}
+			static void defaultPipelineConfigInfo(ConfigInfo &configInfo);
 
 			/**
-			 * @brief set the count of the given descriptor
-			 * 
-			 * @param binding the binding of the desccriptor
-			 * @param count 
+			 * @brief get a reference to teh current configuration of the pipeline
+			 * @return ConfigInfo& 
 			 */
-			void setDescriptorCount(uint32_t binding, uint32_t count) noexcept {get(binding).count = count;}
+			ConfigInfo &getConfig() noexcept {return *config;}
+
+			/**
+			 * @brief set the path to the fragment and vertex files
+			 * 
+			 * @param frag the fragment file
+			 * @param vert the vertex file
+			 */
+			void setShaderFiles(const std::string &frag, const std::string &vert){fragPath = frag; vertPath = vert;}
+
+			void setVertex(const std::string &filepath) {vertPath = filepath;}
+			void setFragment(const std::string &filepath) {fragPath = filepath;}
 		
 		private:
 			void createRenderPass(SwapChain &swapChain);
 			void createDescriptorSetLayout();
+			void createGraphicPipeline();
+			void createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
+			static std::vector<char> readFile(const std::string &filepath);
 
 			LogicalDevice &device;
 
-			VkRenderPass renderPass;
-			VkPipeline pipeline;
-            VkDescriptorSetLayout descriptorSetLayout;
+			VkPipeline pipeline = VK_NULL_HANDLE;
+			VkShaderModule vertShaderModule;
+			VkShaderModule fragShaderModule;
 			
-			std::unordered_map<uint32_t, Descriptor> descriptors{};
+			std::unique_ptr<ConfigInfo> config;
+			std::string vertPath, fragPath;
+
+			bool builded = false;
 	};
 }

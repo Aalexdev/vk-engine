@@ -9,7 +9,7 @@
 #include "engine/CommandPool.hpp"
 #include "engine/Renderer.hpp"
 #include "engine/Image.hpp"
-#include "engine/SingleTimeCommands.hpp"
+#include "engine/Pipeline.hpp"
 
 int main(int argc, char **argv){
 
@@ -38,7 +38,7 @@ int main(int argc, char **argv){
 	commandPool.build();
 
 	vk_engine::Renderer renderer(logicalDevice, commandPool);
-	renderer.getSwapChain().setRefreshType(vk_engine::REFRESH_IMMEDIATE_MODE); // V-sync
+	renderer.getSwapChain().setRefreshType(vk_engine::REFRESH_FIFO_MODE); // V-sync
 	renderer.setAutoUpdateViewportSize(true);
 	renderer.setClearColor(0.05f, 0.05f, 0.05f, 0.05f);
 	renderer.build();
@@ -49,6 +49,22 @@ int main(int argc, char **argv){
 	image.setFilter(vk_engine::Image::FILTER_NEARTEST);
 	image.setNomalizedCoordonates(true);
 	image.build();
+
+	// ! test
+
+	// this is just a temporary pipeline descriptor structure to check the pipeline support
+	struct PipelineDescriptor{
+		int data;
+	};
+
+	auto start = std::chrono::high_resolution_clock::now();
+	vk_engine::Pipeline pipeline(logicalDevice, renderer.getSwapChain());
+	pipeline.setShaderFiles("res/shaders/bin/shader.frag.spv", "res/shaders/bin/shader.vert.spv");
+	pipeline.build();
+
+	std::cout << "test : vk_engine::Pipeline creation and build : " << std::chrono::duration<float, std::chrono::milliseconds::period>(std::chrono::high_resolution_clock::now() - start).count() << "ms" << std::endl;
+
+	// ! test
 	
 	auto startTime = std::chrono::high_resolution_clock::now();
 	float counter = 0.f;
