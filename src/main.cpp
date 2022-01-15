@@ -12,7 +12,6 @@
 #include "engine/Pipeline.hpp"
 
 int main(int argc, char **argv){
-
 	vk_engine::Window window("title", 1080, 720);
 
 	vk_engine::Instance instance(window);
@@ -51,12 +50,6 @@ int main(int argc, char **argv){
 	image.build();
 
 	// ! test
-
-	// this is just a temporary pipeline descriptor structure to check the pipeline support
-	struct PipelineDescriptor{
-		int data;
-	};
-
 	auto start = std::chrono::high_resolution_clock::now();
 	vk_engine::Pipeline pipeline(logicalDevice, renderer.getSwapChain());
 	pipeline.setShaderFiles("res/shaders/bin/shader.frag.spv", "res/shaders/bin/shader.vert.spv");
@@ -76,7 +69,6 @@ int main(int argc, char **argv){
 		if (auto commandBuffer = renderer.beginFrame()){
 			renderer.beginSwapChainRenderPass(commandBuffer);
 
-
 			renderer.endSwapChainRenderPass(commandBuffer);
 			renderer.endFrame();
 		}
@@ -92,5 +84,6 @@ int main(int argc, char **argv){
 		}
 	}
 
+	// avoid destroying instances while the gpu is working
     vkDeviceWaitIdle(logicalDevice);
 }

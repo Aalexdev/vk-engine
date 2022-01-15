@@ -75,7 +75,16 @@ namespace vk_engine{
 			 */
 			void setShaderFiles(const std::string &frag, const std::string &vert){fragPath = frag; vertPath = vert;}
 
+			/**
+			 * @brief set the path to the vertex shader
+			 * @param filepath the path to the file
+			 */
 			void setVertex(const std::string &filepath) {vertPath = filepath;}
+
+			/**
+			 * @brief set the path to the fgragment shader
+			 * @param filepath the path to the file
+			 */
 			void setFragment(const std::string &filepath) {fragPath = filepath;}
 		
 		private:
