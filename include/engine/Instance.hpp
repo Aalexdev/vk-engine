@@ -93,6 +93,8 @@ namespace vk_engine{
 			void setDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo) const noexcept;
 			void hasGflwRequiredInstanceExtensions();
 			void setupDebugMessenger();
+			
+			Window &window;
 
 			VkInstance instance;
 			VkDebugUtilsMessengerEXT debugMessenger;
@@ -100,7 +102,7 @@ namespace vk_engine{
 
 			std::vector<const char*> validationLayers;
 
-			bool validationLayerEnable = false;
+			bool validationLayerEnable;
 
 			std::string applicationName = "NoNameApp";
 			std::string engineName = "NoEngine";
@@ -111,6 +113,5 @@ namespace vk_engine{
 			std::vector<std::string> availableExtensions;
 			std::vector<std::string> requiredExtensions;
 
-			Window &window;
 	};
 }

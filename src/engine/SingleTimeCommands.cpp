@@ -126,4 +126,10 @@ namespace vk_engine{
 
 		vkCmdPipelineBarrier(commandBuffer, sourceStage, destinationStage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 	}
+
+	void blitImage(CommandPool &commandPool, LogicalDevice &device, VkImage srcImage, VkImageLayout srcLayout, VkImage dstImage, VkImageLayout dstLayout, uint32_t regionCount, VkImageBlit *regions, VkFilter filter){
+		SingleTimeCommands commandBuffer(commandPool, device, device.getQueues()[0][FAMILY_GRAPHIC]);
+		vkCmdBlitImage(commandBuffer, srcImage, srcLayout, dstImage, dstLayout, regionCount, regions, filter);
+	}
+
 }

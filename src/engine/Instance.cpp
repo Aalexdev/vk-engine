@@ -11,11 +11,12 @@
 #include <algorithm>
 #include <iterator>
 
-static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-        VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-        VkDebugUtilsMessageTypeFlagsEXT messageType,
-        const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-        void *pUserData) {
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData, void *pUserData) {
+
+	if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT){
+        std::cerr << pCallbackData->pMessage << std::endl;
+        return VK_FALSE;
+    }
 
     return VK_FALSE;
 }
@@ -32,21 +33,20 @@ static inline VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const V
 
 static inline void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks *pAllocator){
 
-    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-            instance,
-            "vkDestroyDebugUtilsMessengerEXT");
+    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
     if (func != nullptr) {
         func(instance, debugMessenger, pAllocator);
     }
 }
 
 namespace vk_engine{
-	Instance::Instance(Window &window) : window{window}{}
+	Instance::Instance(Window &window) : window{window}, validationLayerEnable{false}{}
 	Instance::Instance(Window &window, const bool &validationLayerEnable) : window{window}, validationLayerEnable{validationLayerEnable}{}
 
 	Instance::~Instance(){
 		if (validationLayerEnable) DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
 
+		vkDestroySurfaceKHR(instance, surface, nullptr);
 		vkDestroyInstance(instance, nullptr);
 	}
 

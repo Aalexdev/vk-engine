@@ -152,14 +152,14 @@ namespace vk_engine{
 			static VkDeviceSize getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment);
 
 			LogicalDevice &device;
+			uint32_t instanceCount;
+			VkDeviceSize instanceSize;
 
 			VkBuffer buffer = VK_NULL_HANDLE;
 			VkDeviceMemory memory = VK_NULL_HANDLE;
 			void* mapped = nullptr;
 
 			VkDeviceSize bufferSize;
-			uint32_t instanceCount;
-			VkDeviceSize instanceSize;
 			VkDeviceSize alignmentSize;
 			VkBufferUsageFlags usageFlags;
 			VkMemoryPropertyFlags memoryPropertyFlags;
