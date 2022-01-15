@@ -9,9 +9,9 @@
 #include "engine/CommandPool.hpp"
 #include "engine/Renderer.hpp"
 #include "engine/Image.hpp"
+#include "engine/Pipeline.hpp"
 
 int main(int argc, char **argv){
-
 	vk_engine::Window window("title", 1080, 720);
 
 	vk_engine::Instance instance(window);
@@ -48,6 +48,16 @@ int main(int argc, char **argv){
 	image.setFilter(vk_engine::Image::FILTER_NEARTEST);
 	image.setNomalizedCoordonates(true);
 	image.build();
+
+	// ! test
+	auto start = std::chrono::high_resolution_clock::now();
+	vk_engine::Pipeline pipeline(logicalDevice, renderer.getSwapChain());
+	pipeline.setShaderFiles("res/shaders/bin/shader.frag.spv", "res/shaders/bin/shader.vert.spv");
+	pipeline.build();
+
+	std::cout << "test : vk_engine::Pipeline creation and build : " << std::chrono::duration<float, std::chrono::milliseconds::period>(std::chrono::high_resolution_clock::now() - start).count() << "ms" << std::endl;
+
+	// ! test
 	
 	auto startTime = std::chrono::high_resolution_clock::now();
 	float counter = 0.f;
@@ -58,25 +68,6 @@ int main(int argc, char **argv){
 		startTime = std::chrono::high_resolution_clock::now();
 		if (auto commandBuffer = renderer.beginFrame()){
 			renderer.beginSwapChainRenderPass(commandBuffer);
-
-			VkImageBlit blit{};
-			blit.srcOffsets[0] = {0, 0, 0};
-			blit.srcOffsets[1] = {image.width(), image.height(), 1};
-			
-			blit.dstOffsets[0] = {0, 0, 0};
-			blit.dstOffsets[1] = {image.width(), image.height(), 1};
-
-			blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-			blit.dstSubresource.baseArrayLayer = 0;
-			blit.dstSubresource.layerCount = 1;
-			blit.dstSubresource.mipLevel = 0;
-
-			blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-			blit.srcSubresource.baseArrayLayer = 0;
-			blit.srcSubresource.layerCount = 1;
-			blit.srcSubresource.mipLevel = 0;
-
-			vkCmdBlitImage(commandBuffer, image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, renderer.getSwapChain().getCurrentImage(), VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1, &blit, VK_FILTER_LINEAR);
 
 			renderer.endSwapChainRenderPass(commandBuffer);
 			renderer.endFrame();
@@ -93,5 +84,6 @@ int main(int argc, char **argv){
 		}
 	}
 
+	// avoid destroying instances while the gpu is working
     vkDeviceWaitIdle(logicalDevice);
 }

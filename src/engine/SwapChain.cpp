@@ -89,7 +89,7 @@ namespace vk_engine{
 		createInfo.imageColorSpace = surfaceFormat.colorSpace;
 		createInfo.imageExtent = extent;
 		createInfo.imageArrayLayers = 1;
-		createInfo.imageUsage = VK_IMAGE_USAGE_TRANSFER_DST_BIT;
+		createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
 		// queus
 		uint32_t queueFamilyIndices[] = {device.getPhysicalDevice().getFamily(FAMILY_GRAPHIC).family, device.getPhysicalDevice().getFamily(FAMILY_PRESENT).family};

@@ -57,5 +57,9 @@
 		"set": "cpp",
 		"chrono": "cpp",
 		"ratio": "cpp"
+	},
+	"editor.tokenColorCustomizations": {
+		"comments": "",
+		"textMateRules": []
 	}
 }
