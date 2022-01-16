@@ -22,15 +22,15 @@ namespace vk_engine{
 				ConfigInfo(const ConfigInfo&) = delete;
 				ConfigInfo &operator=(const ConfigInfo&) = delete;
 
-				VkPipelineViewportStateCreateInfo viewportInfo;
-				VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
-				VkPipelineRasterizationStateCreateInfo rasterizationInfo;
-				VkPipelineMultisampleStateCreateInfo multisampleInfo;
-				VkPipelineColorBlendAttachmentState colorBlendAttachment;
-				VkPipelineColorBlendStateCreateInfo colorBlendInfo;
-				VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
-				std::vector<VkDynamicState> dynamicStateEnables;
-				VkPipelineDynamicStateCreateInfo dynamicStateInfo;
+				VkPipelineViewportStateCreateInfo viewportInfo{};
+				VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo{};
+				VkPipelineRasterizationStateCreateInfo rasterizationInfo{};
+				VkPipelineMultisampleStateCreateInfo multisampleInfo{};
+				VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+				VkPipelineColorBlendStateCreateInfo colorBlendInfo{};
+				VkPipelineDepthStencilStateCreateInfo depthStencilInfo{};
+				std::vector<VkDynamicState> dynamicStateEnables{};
+				VkPipelineDynamicStateCreateInfo dynamicStateInfo{};
 				VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
 				VkRenderPass renderPass = VK_NULL_HANDLE;
 				uint32_t subpass = 0;
@@ -85,6 +85,12 @@ namespace vk_engine{
 			 * @param filepath the path to the file
 			 */
 			void setFragment(const std::string &filepath) {fragPath = filepath;}
+
+			/**
+			 * @brief bind the pipeline to the commandBuffer
+			 * @param commandBuffer 
+			 */
+			void bind(VkCommandBuffer commandBuffer);
 		
 		private:
 			void createGraphicPipeline();

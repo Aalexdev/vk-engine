@@ -50,14 +50,20 @@ int main(int argc, char **argv){
 	image.build();
 
 	// ! test
+
+	// this is thoericaly the max size of a push constant
 	struct PushConstantInstance{
-		int data;
+		int matrix[4][4];
 	};
 
 	vk_engine::Displayer displayer(logicalDevice, renderer.getSwapChain().getRenderPass());
-	displayer.setPushConstant<PushConstantInstance>();
+	displayer.setPushConstant<PushConstantInstance>({}, VK_SHADER_STAGE_FRAGMENT_BIT);
+	displayer.setPushConstant<PushConstantInstance>({}, VK_SHADER_STAGE_VERTEX_BIT);
 	displayer.getPipeline().setShaderFiles("res/shaders/bin/shader.frag.spv", "res/shaders/bin/shader.vert.spv");
 	displayer.build();
+	
+	displayer.setPushConstantData<PushConstantInstance>({0, 2}, 0);
+	displayer.setPushConstantData<PushConstantInstance>({0, 3}, 1);
 
 	// ! test
 	

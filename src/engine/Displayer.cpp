@@ -54,4 +54,9 @@ namespace vk_engine{
 		return sum;
 	}
 
+	void Displayer::bind(VkCommandBuffer commandBuffer){
+		pipeline.bind(commandBuffer);
+	}
+
+
 }
