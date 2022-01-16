@@ -9,7 +9,7 @@
 #include "engine/CommandPool.hpp"
 #include "engine/Renderer.hpp"
 #include "engine/Image.hpp"
-#include "engine/Displayer.hpp"
+#include "engine/Pipeline.hpp"
 
 int main(int argc, char **argv){
 	vk_engine::Window window("title", 1080, 720);
@@ -51,20 +51,16 @@ int main(int argc, char **argv){
 
 	// ! test
 
-	// this is thoericaly the max size of a push constant
+	// this is thoericaly the half of the max size of a push constant
 	struct PushConstantInstance{
 		int matrix[4][4];
 	};
 
-	vk_engine::Displayer displayer(logicalDevice, renderer.getSwapChain().getRenderPass());
-	displayer.setPushConstant<PushConstantInstance>({}, VK_SHADER_STAGE_FRAGMENT_BIT);
-	displayer.setPushConstant<PushConstantInstance>({}, VK_SHADER_STAGE_VERTEX_BIT);
-	displayer.getPipeline().setShaderFiles("res/shaders/bin/shader.frag.spv", "res/shaders/bin/shader.vert.spv");
-	displayer.build();
-	
-	displayer.setPushConstantData<PushConstantInstance>({0, 2}, 0);
-	displayer.setPushConstantData<PushConstantInstance>({0, 3}, 1);
-
+	vk_engine::Pipeline pipeline(logicalDevice);
+	pipeline.setShaderFiles("res/shaders/bin/shader.frag.spv", "res/shaders/bin/shader.vert.spv");
+	pipeline.setPushConstant<PushConstantInstance>();
+	pipeline.setRenderPass(renderer.getSwapChain().getRenderPass());
+	pipeline.build();
 	// ! test
 	
 	auto startTime = std::chrono::high_resolution_clock::now();

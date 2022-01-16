@@ -14,12 +14,14 @@ namespace vk_engine{
 		vkDestroyShaderModule(device, fragShaderModule, nullptr);
 		vkDestroyShaderModule(device, vertShaderModule, nullptr);
 		vkDestroyPipeline(device, pipeline, nullptr);
+		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 	}
 
 	void Pipeline::build(){
 		assert(!builded && "cannot build a pipeline twice");
-		assert((config->renderPass != VK_NULL_HANDLE || config->pipelineLayout != VK_NULL_HANDLE) && "cannot create a pipeline without a valid renderPass, subpass or pipelineLayout");
-
+		assert(config->renderPass != VK_NULL_HANDLE && "cannot create a pipeline without a valid renderPass, subpass or pipelineLayout");
+		
+		createPipelineLayout();
 		createGraphicPipeline();
 
 		builded = true;
@@ -69,8 +71,10 @@ namespace vk_engine{
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		
 		vertexInputInfo.vertexBindingDescriptionCount = 0;
 		vertexInputInfo.pVertexBindingDescriptions = nullptr;
+
 		vertexInputInfo.vertexAttributeDescriptionCount = 0;
 		vertexInputInfo.pVertexAttributeDescriptions = nullptr;
 
@@ -88,7 +92,7 @@ namespace vk_engine{
 		pipelineInfo.pDynamicState = &config->dynamicStateInfo;
 		pipelineInfo.pDepthStencilState = &config->depthStencilInfo;
 
-		pipelineInfo.layout = config->pipelineLayout;
+		pipelineInfo.layout = pipelineLayout;
 		pipelineInfo.renderPass = config->renderPass;
 		pipelineInfo.subpass = config->subpass;
 
@@ -186,5 +190,46 @@ namespace vk_engine{
 
 	void Pipeline::bind(VkCommandBuffer commandBuffer){
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+	}
+
+	void Pipeline::createPipelineLayout(){
+		std::vector<VkPushConstantRange> pushConstantRanges(pushConstants.size());
+	
+		for (int i=0; i<static_cast<int>(pushConstantRanges.size()); i++){
+			pushConstantRanges[i].offset = pushConstants[i].offset;
+			pushConstantRanges[i].size = pushConstants[i].size;
+			pushConstantRanges[i].stageFlags = pushConstants[i].stages;
+		}
+
+		VkPipelineLayoutCreateInfo createInfo{};
+		createInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		createInfo.pushConstantRangeCount = static_cast<uint32_t>(pushConstants.size());
+		createInfo.pPushConstantRanges = pushConstantRanges.data();
+
+		// TODO
+		createInfo.setLayoutCount = 0;
+		createInfo.pSetLayouts = nullptr;
+
+		createInfo.flags = 0;
+
+		if (vkCreatePipelineLayout(device, &createInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
+			throw std::runtime_error("failed to create pipeline layout");
+	}
+
+	void Pipeline::bindPushConstants(VkCommandBuffer commandBuffer, VkShaderStageFlags stages) const noexcept{
+		vkCmdPushConstants(commandBuffer, pipelineLayout, stages, 0, pushConstantsSize, pushConstantsData.data());
+	}
+
+	void Pipeline::bindPushConstant(VkCommandBuffer commandBuffer, int binding, VkShaderStageFlags stages) const noexcept{
+		assert(binding < static_cast<int>(pushConstants.size()) && "the binding cannt be greater than the count of push constants");
+		vkCmdPushConstants(commandBuffer, pipelineLayout, stages, pushConstants[binding].offset, pushConstants[binding].size, pushConstantsData[binding].get());
+	}
+
+	size_t Pipeline::getPushConstantsSize() const noexcept{
+		size_t sum = 0;
+		for (auto &p : pushConstants){
+			sum += p.size;
+		}
+		return sum;
 	}
 }

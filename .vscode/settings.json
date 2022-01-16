@@ -56,7 +56,9 @@
 		"unordered_set": "cpp",
 		"set": "cpp",
 		"chrono": "cpp",
-		"ratio": "cpp"
+		"ratio": "cpp",
+		"fstream": "cpp",
+		"typeindex": "cpp"
 	},
 	"editor.tokenColorCustomizations": {
 		"comments": "",
