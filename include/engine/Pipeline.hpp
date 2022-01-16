@@ -1,7 +1,6 @@
 #pragma once
 
 #include "engine/LogicalDevice.hpp"
-#include "engine/SwapChain.hpp"
 
 // libs
 #include <vulkan/vulkan.h>
@@ -38,7 +37,7 @@ namespace vk_engine{
 			};
         
 			
-			Pipeline(LogicalDevice &device, SwapChain &swapChain);
+			Pipeline(LogicalDevice &device);
 			~Pipeline();
 
 			// void vopy
@@ -88,8 +87,6 @@ namespace vk_engine{
 			void setFragment(const std::string &filepath) {fragPath = filepath;}
 		
 		private:
-			void createRenderPass(SwapChain &swapChain);
-			void createDescriptorSetLayout();
 			void createGraphicPipeline();
 			void createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
 			static std::vector<char> readFile(const std::string &filepath);

@@ -6,7 +6,7 @@
 #include <iostream>
 
 namespace vk_engine{
-	Pipeline::Pipeline(LogicalDevice &device, SwapChain &swapChain) : device{device}{
+	Pipeline::Pipeline(LogicalDevice &device) : device{device}{
 		config = std::make_unique<ConfigInfo>();
 	}
 
@@ -18,7 +18,7 @@ namespace vk_engine{
 
 	void Pipeline::build(){
 		assert(!builded && "cannot build a pipeline twice");
-		assert((config->renderPass != VK_NULL_HANDLE || config->subpass != 0 || config->pipelineLayout != VK_NULL_HANDLE) && "cannot create a pipeline without a valid renderPass, subpass or pipelineLayout");
+		assert((config->renderPass != VK_NULL_HANDLE || config->pipelineLayout != VK_NULL_HANDLE) && "cannot create a pipeline without a valid renderPass, subpass or pipelineLayout");
 
 		createGraphicPipeline();
 
@@ -177,6 +177,7 @@ namespace vk_engine{
 
 		configInfo.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
 		configInfo.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+		
 		configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data();
 		configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
 		configInfo.dynamicStateInfo.flags = 0;

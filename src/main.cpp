@@ -9,7 +9,7 @@
 #include "engine/CommandPool.hpp"
 #include "engine/Renderer.hpp"
 #include "engine/Image.hpp"
-#include "engine/Pipeline.hpp"
+#include "engine/Displayer.hpp"
 
 int main(int argc, char **argv){
 	vk_engine::Window window("title", 1080, 720);
@@ -50,12 +50,14 @@ int main(int argc, char **argv){
 	image.build();
 
 	// ! test
-	auto start = std::chrono::high_resolution_clock::now();
-	vk_engine::Pipeline pipeline(logicalDevice, renderer.getSwapChain());
-	pipeline.setShaderFiles("res/shaders/bin/shader.frag.spv", "res/shaders/bin/shader.vert.spv");
-	pipeline.build();
+	struct PushConstantInstance{
+		int data;
+	};
 
-	std::cout << "test : vk_engine::Pipeline creation and build : " << std::chrono::duration<float, std::chrono::milliseconds::period>(std::chrono::high_resolution_clock::now() - start).count() << "ms" << std::endl;
+	vk_engine::Displayer displayer(logicalDevice, renderer.getSwapChain().getRenderPass());
+	displayer.setPushConstant<PushConstantInstance>();
+	displayer.getPipeline().setShaderFiles("res/shaders/bin/shader.frag.spv", "res/shaders/bin/shader.vert.spv");
+	displayer.build();
 
 	// ! test
 	
